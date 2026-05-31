@@ -1,15 +1,11 @@
 #!/bin/bash
-
 # Semih Kaynar
 # 2420191011
 # Sertifika 1: https://www.btkakademi.gov.tr/portal/certificate/validate?certificateId=BozfxjnPLm
 # Sertifika 2: https://credsverse.com/credentials/5c6c792e-253d-4ebd-b4e3-5e8fb97e373a
 
 LOGFILE="report.log"
-
-echo "Rapor oluşturuluyor..."
-
-# ISO tarih
+echo "Rapor oluşturma adımı"
 echo "Başlangıç Tarihi: $(date -Iseconds)" > "$LOGFILE"
 echo "" >> "$LOGFILE"
 echo "işlemci" >> "$LOGFILE"
@@ -36,7 +32,7 @@ gpg --batch --yes \
     -o report.log.gpg \
     report.log
 
-if [ $? -eq 0 ]
+if [$? -eq 0]
 then
     echo ""
     echo "Başardım."
