@@ -5,34 +5,28 @@
 # Sertifika 2: https://credsverse.com/credentials/5c6c792e-253d-4ebd-b4e3-5e8fb97e373a
 
 LOGFILE="report.log"
-echo "Rapor oluşturma adımı"
-echo "Başlangıç Tarihi: $(date -Iseconds)" > "$LOGFILE"
+echo "Başlangıç Tarihi: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" > "$LOGFILE"
 echo "" >> "$LOGFILE"
 echo "işlemci" >> "$LOGFILE"
-lscpu >> "$LOGFILE" 2>/dev/null
+wmic cpu get Name >> "$LOGFILE" 2>/dev/null
 echo "" >> "$LOGFILE"
 echo "ram" >> "$LOGFILE"
-free -h >> "$LOGFILE" 2>/dev/null
+wmic computersystem get TotalPhysicalMemory >> "$LOGFILE" 2>/dev/null
 echo "" >> "$LOGFILE"
 echo "anakart" >> "$LOGFILE"
-sudo dmidecode -t baseboard >> "$LOGFILE" 2>/dev/null
+wmic baseboard get Product,SerialNumber >> "$LOGFILE" 2>/dev/null
 echo "" >> "$LOGFILE"
 echo "disk uuid" >> "$LOGFILE"
-lsblk -o NAME,UUID >> "$LOGFILE" 2>/dev/null
+wmic csproduct get UUID >> "$LOGFILE" 2>/dev/null
 echo "" >> "$LOGFILE"
 echo "mac adresleri" >> "$LOGFILE"
-ip link | grep link/ether >> "$LOGFILE"
+getmac >> "$LOGFILE" 2>/dev/null
 echo ""
+# Kullanicidan gizli sifre alma (Sen MYO+202 gireceksin)
 read -s -p "Parola (MYO+202): " PAROLA
 echo ""
-gpg --batch --yes \
-    --passphrase "$PAROLA" \
-    --symmetric \
-    --cipher-algo AES256 \
-    -o report.log.gpg \
-    report.log
-
-if [$? -eq 0]
+echo "$PAROLA" | gpg --symmetric --batch --yes --passphrase-fd 0 --cipher-algo AES256 -o report.log.gpg "$LOGFILE"
+if [ $? -eq 0 ]
 then
     echo ""
     echo "Başardım."
